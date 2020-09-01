@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+    <head>
+        <title>YCbCr Compoenent Demo</title>
+        <link rel="stylesheet" href="./css/style.css">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+        <!--  Boostrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <h1>YCbCr Component Demo</h1>
+            <div class="dropdown-divider"></div>
+            <div class="row">
+                <div class="col text-center">
+                    <h2>Original</h2>
+                    <canvas id="original-canvas"></canvas>
+                </div>
+                <div class="col text-center">
+                    <h2>Output</h2>
+                    <canvas id="output-canvas"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-center">
+                    <h4>Luma (Y)</h4>
+                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="235" id="lumaRange">
+                    <canvas id="luma-canvas"></canvas>
+                </div>
+                <div class="col text-center">
+                    <h4>Chroma Blue (Cb)</h4>
+                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="240" id="chromaBlueRange">
+                    <canvas id="chroma-blue-canvas"></canvas>
+                </div>
+                <div class="col text-center">
+                    <h4>Chroma Red (Cr)</h4>
+                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="240" id="chromaRedRange">
+                    <canvas id="chroma-red-canvas"></canvas>
+                </div>
+                <div class="col text-center">
+                    <h4>Sub Sampling</h4>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+                        <label class="form-check-label" for="exampleRadios1">
+                            4:4:4
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+                        <label class="form-check-label" for="exampleRadios2">
+                            4:2:2
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
+                        <label class="form-check-label" for="exampleRadios3">
+                            4:2:0
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="./src/index.ts"></script>
+    </body>
+</html>
