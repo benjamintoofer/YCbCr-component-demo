@@ -1,3 +1,5 @@
+import { SamplingType } from "./sampling_type"
+import { debug } from "console"
 
 interface ImagePayLoad {
     lumaImageData: ImageData
@@ -17,55 +19,99 @@ const matrixYCbCr2RGB = [
 ]
 const YCbCrOffset = [16, 128, 128]
 
+const getChromaArraySizeFromSamplingType = (length: number, samplingType: SamplingType) => {
+    switch (samplingType) {
+        case SamplingType.FOUR_FOUR_FOUR:
+            return length
+        case SamplingType.FOUR_TWO_TWO:
+            return Math.floor(length / 2)
+        case SamplingType.FOUR_TWO_ZERO:
+            return Math.floor(length / 4)
+        default:
+            return length
+    }
+}
+
+const getChromaRowDivisor = (samplingType: SamplingType) => {
+    if (samplingType === SamplingType.FOUR_TWO_ZERO) {
+        return 2
+    } else {
+        return 1
+    }
+}
+
+const getChromaColDivisor = (samplingType: SamplingType) => {
+    if (samplingType === SamplingType.FOUR_FOUR_FOUR) {
+        return 1
+    } else {
+        return 2
+    }
+}
+
 // TODO: Need to change this so that it uses the sub sampling strategy to determine the width and height of the chroma red/blue image data
-export const generateLumaChromaImageData = (data: ImageData): ImagePayLoad => {
-    const lumaImageData = new Uint8ClampedArray(data.data.length)
-    const chromaRedImageData = new Uint8ClampedArray(data.data.length)
-    const chromaBlueImageData = new Uint8ClampedArray(data.data.length)
-    for (let i = 0; i < data.data.length; i+=4) {
+export const generateLumaChromaImageData = (data: ImageData, samplingType: SamplingType): ImagePayLoad => {
+    const lumaArraySize = data.data.length
+    const chromaArraySize = getChromaArraySizeFromSamplingType(data.data.length, samplingType)
+    const lumaImageData = new Uint8ClampedArray(lumaArraySize)
+    const chromaRedImageData = new Uint8ClampedArray(chromaArraySize)
+    const chromaBlueImageData = new Uint8ClampedArray(chromaArraySize)
+    const PIXEL_DATA_SIZE = 4
+    const colDivisor = getChromaColDivisor(samplingType)
+    const rowDivisor = getChromaRowDivisor(samplingType)
+    const chromaRowWidth = Math.floor(data.width / colDivisor)
+    
+    for (let i = 0; i < data.data.length; i += PIXEL_DATA_SIZE) {
+        const row = Math.floor((i / PIXEL_DATA_SIZE) / data.width)
+        const col = (i / PIXEL_DATA_SIZE)  % data.width
+
         const r = data.data[i]
         const g = data.data[i + 1]
         const b = data.data[i + 2]
         const a = data.data[i + 3]
-        let y = 0.299 * r + 0.587 * g + 0.114 * b
       
         const rgbVector = [r, g, b]
+        const YCrCbVector = multiply(matrixRGB2YCbCr, rgbVector)
+        const YCrCbVectorWithOffset = add(YCbCrOffset, YCrCbVector)
 
-        const val = multiply(matrixRGB2YCbCr, rgbVector)
-       
-        const YCrCb = add(YCbCrOffset, val)
-        const temp = [(235 - 16) / 2, 128, YCrCb[2]]
-        const something = subtract(temp, YCbCrOffset)
-       
-        const ben = multiply(matrixYCbCr2RGB, something)
-        lumaImageData[i] = ben[0]
-        lumaImageData[i + 1] = ben[1]
-        lumaImageData[i + 2] = ben[2]
+        let vector = [YCrCbVectorWithOffset[0], 128, 128]
+        let vectorWithoutOffset = subtract(vector, YCbCrOffset)
+        let newRGBVector = multiply(matrixYCbCr2RGB, vectorWithoutOffset)
+
+        lumaImageData[i] = newRGBVector[0]
+        lumaImageData[i + 1] = newRGBVector[1]
+        lumaImageData[i + 2] = newRGBVector[2]
         lumaImageData[i + 3] = a
 
-        chromaBlueImageData[i] = 0
-        chromaBlueImageData[i + 1] = 0
-        chromaBlueImageData[i + 2] = (0.564 * (b - y))
-        chromaBlueImageData[i + 3] = a
+        if (col % colDivisor === 0 && row % rowDivisor === 0) {
+            const newRow = Math.floor(row / rowDivisor)
+            const newCol = Math.floor(col / colDivisor)
+            const newIndex = ((newRow * chromaRowWidth) + newCol) * PIXEL_DATA_SIZE
+            vector = [128, YCrCbVectorWithOffset[1], 128]
+            vectorWithoutOffset = subtract(vector, YCbCrOffset)
+            newRGBVector = multiply(matrixYCbCr2RGB, vectorWithoutOffset)
 
-        chromaRedImageData[i] = 0.713 * (r - y)
-        chromaRedImageData[i + 1] = g
-        chromaRedImageData[i + 2] = (0.564 * (b - y))
-        chromaRedImageData[i + 3] = a
+            chromaBlueImageData[newIndex] = newRGBVector[0]
+            chromaBlueImageData[newIndex + 1] = newRGBVector[1]
+            chromaBlueImageData[newIndex + 2] = newRGBVector[2]
+            chromaBlueImageData[newIndex + 3] = a
+
+            vector = [128, 128, YCrCbVectorWithOffset[2]]
+            vectorWithoutOffset = subtract(vector, YCbCrOffset)
+            newRGBVector = multiply(matrixYCbCr2RGB, vectorWithoutOffset)
+
+            chromaRedImageData[newIndex] = newRGBVector[0]
+            chromaRedImageData[newIndex + 1] = newRGBVector[1]
+            chromaRedImageData[newIndex + 2] = newRGBVector[2]
+            chromaRedImageData[newIndex + 3] = a
+        }
     }
+    console.warn(chromaRedImageData.length)
+    console.warn(chromaRowWidth)
     return {
         lumaImageData: new ImageData(lumaImageData, data.width),
-        chromaRedImageData: new ImageData(lumaImageData, data.width),
-        chromaBlueImageData: new ImageData(lumaImageData, data.width)
+        chromaRedImageData: new ImageData(chromaRedImageData, chromaRowWidth),
+        chromaBlueImageData: new ImageData(chromaBlueImageData, chromaRowWidth)
     }
-}
-
-export const generateChromeRedImageData = (data: ImageData): ImageData => {
-
-}
-
-export const generateChromeBlueImageData = (data: ImageData): ImageData => {
-
 }
 
 const multiply = (matrixA: number[][], vector: number[]): number[] => {

@@ -19,59 +19,60 @@
             crossorigin="anonymous"></script>
     </head>
     <body>
-        <div class="container-fluid">
+        <div class="container">
             <h1>YCbCr Component Demo</h1>
             <div class="dropdown-divider"></div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col text-center">
                     <h2>Original</h2>
                     <canvas id="original-canvas"></canvas>
                 </div>
                 <div class="col text-center">
-                    <h2>Output</h2>
-                    <canvas id="output-canvas"></canvas>
+                    <h2>Result</h2>
+                    <canvas id="result-canvas"></canvas>
                 </div>
             </div>
-            <div class="row">
-                <div class="col text-center">
-                    <h4>Luma (Y)</h4>
-                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="235" id="lumaRange">
-                    <canvas id="luma-canvas"></canvas>
-                </div>
-                <div class="col text-center">
-                    <h4>Chroma Blue (Cb)</h4>
-                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="240" id="chromaBlueRange">
-                    <canvas id="chroma-blue-canvas"></canvas>
-                </div>
-                <div class="col text-center">
-                    <h4>Chroma Red (Cr)</h4>
-                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="240" id="chromaRedRange">
-                    <canvas id="chroma-red-canvas"></canvas>
-                </div>
-                <div class="col text-center">
-                    <h4>Sub Sampling</h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-                        <label class="form-check-label" for="exampleRadios1">
+            <div class="row mb-5">
+                <div class="col">
+                    <h3>Sub Sampling</h3>
+                    <div class="form-check-inline">
+                        <input class="form-check-input" type="radio" name="subSamplingOptions" id="sub-sampling-0" value="0" checked>
+                        <label class="form-check-label" for="sub-sampling-0">
                             4:4:4
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-                        <label class="form-check-label" for="exampleRadios2">
+                    <div class="form-check-inline">
+                        <input class="form-check-input" type="radio" name="subSamplingOptions" id="sub-sampling-1" value="1">
+                        <label class="form-check-label" for="sub-sampling-1">
                             4:2:2
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
-                        <label class="form-check-label" for="exampleRadios3">
+                    <div class="form-check-inline">
+                        <input class="form-check-input" type="radio" name="subSamplingOptions" id="sub-sampling-2" value="2">
+                        <label class="form-check-label" for="sub-sampling-2">
                             4:2:0
                         </label>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <h4>Luma (Y)</h4>
+                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="235" id="luma-range">
+                    <canvas id="luma-canvas"></canvas>
+                </div>
+                <div class="col">
+                    <h4>Chroma Blue (Cb)</h4>
+                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="240" id="chroma-blue-range">
+                    <canvas id="chroma-blue-canvas"></canvas>
+                </div>
+                <div class="col">
+                    <h4>Chroma Red (Cr)</h4>
+                    <input type="range" class="form-control-range range-bar mb-3" min="16" max="240" id="chroma-red-range">
+                    <canvas id="chroma-red-canvas"></canvas>
+                </div>
+            </div>
         </div>
-        
         <script src="./src/index.ts"></script>
     </body>
 </html>
