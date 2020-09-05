@@ -1,18 +1,15 @@
 {
   "name": "luna_chroma_sub_sampling",
   "version": "1.0.0",
-  "description": "",
+  "description": "YCrCb Component Demo",
   "main": "index.js",
   "scripts": {
-    "start": "parcel index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel index.html"
   },
   "author": "Benjamin Toofer",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^14.6.0",
     "parcel": "^1.12.4",
-    "ts-node-dev": "^1.0.0-pre.60",
     "typescript": "^4.0.2"
   },
   "dependencies": {}
